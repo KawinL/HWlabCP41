@@ -27,22 +27,24 @@ int main(void)
 	  HAL_SPI_Transmit(&hspi1,&data,1,50);
 	  HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,GPIO_PIN_SET);
 	  uint8_t x,y,z;
-	  char xx[20],yy[20],zz[20];
+	  //char xx[20],yy[20],zz[20];
+	  char uart_output[50];
+	  int uart_output_size;
 
 	  while (1)
 	  {
 		  //Receive
 		  HAL_GPIO_WritePin(GPIOE,GPIO_PIN_3,GPIO_PIN_RESET);
 
-		  address = 0x29+ 0x80;
+		  address = 0x29 | 0x80;
 		  HAL_SPI_Transmit(&hspi1,&address,1,50);
 		  HAL_SPI_Receive(&hspi1,&x,1,50);
 
-		  address = 0x2B+ 0x80;
+		  address = 0x2B | 0x80;
 		  HAL_SPI_Transmit(&hspi1,&address,1,50);
 		  HAL_SPI_Receive(&hspi1,&y,1,50);
 
-		  address = 0x2C+ 0x80;
+		  address = 0x2C | 0x80;
 		  HAL_SPI_Transmit(&hspi1,&address,1,50);
 		  HAL_SPI_Receive(&hspi1,&z,1,50);
 
@@ -60,7 +62,7 @@ int main(void)
 		  if((y<240&&y>200)&&(x<15||x>240))HAL_GPIO_WritePin(GPIOD,GPIO_PIN_15,GPIO_PIN_SET);
 		  else HAL_GPIO_WritePin(GPIOD,GPIO_PIN_15,GPIO_PIN_RESET);
 
-		  itoa(x,xx,2);
+		  /*itoa(x,xx,2);
 		  itoa(y,yy,10);
 		  itoa(z,zz,10);
 
@@ -83,8 +85,10 @@ int main(void)
 				k++;
 		  }
 		  HAL_UART_Transmit(&huart2,"\n\r",2,1000);
-
-		  HAL_Delay(150);
+		  */
+		  uart_output_size = sprintf(uart_output,"accelerometer result x = %d : y = %d : z = %d \n\r",x,y,z);
+		  HAL_UART_Transmit(&huart2,uart_output,uart_output_size,1000);
+		  HAL_Delay(200);
 	  }
 }
 
